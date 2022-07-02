@@ -1,0 +1,71 @@
+{
+  "name": "nethermind-frontend",
+  "version": "0.1.0",
+  "author": "Liam Lee",
+  "private": true,
+  "dependencies": {
+    "@chakra-ui/icons": "2.0.2",
+    "@chakra-ui/provider": "2.0.6",
+    "@chakra-ui/react": "2.2.1",
+    "@emotion/react": "11.9.3",
+    "@emotion/styled": "11.9.3",
+    "@fontsource/inter": "4.5.11",
+    "@metamask/jazzicon": "2.0.0",
+    "@reduxjs/toolkit": "1.8.2",
+    "@testing-library/jest-dom": "5.16.4",
+    "@testing-library/react": "13.3.0",
+    "@testing-library/user-event": "13.5.0",
+    "@types/jest": "27.5.2",
+    "@types/node": "16.11.41",
+    "@usedapp/core": "1.0.15",
+    "ethers": "^5.6.9",
+    "framer-motion": "6.3.11",
+    "react": "18.2.0",
+    "react-dom": "18.2.0",
+    "react-redux": "8.0.2",
+    "react-scripts": "5.0.1",
+    "typescript": "4.7.3"
+  },
+  "scripts": {
+    "start": "react-scripts start webpack",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject",
+    "lint": "eslint --ext .js,.ts,.tsx .",
+    "format": "prettier --ignore-path .gitignore --write \"**/*.+(js|ts|tsx|json)\""
+  },
+  "eslintConfig": {
+    "extends": [
+      "react-app",
+      "react-app/jest"
+    ]
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "devDependencies": {
+    "@types/react": "18.0.14",
+    "@types/react-dom": "18.0.5",
+    "@typescript-eslint/eslint-plugin": "5.28.0",
+    "@typescript-eslint/parser": "5.28.0",
+    "eslint": "8.17.0",
+    "eslint-config-prettier": "8.5.0",
+    "eslint-import-resolver-typescript": "2.7.1",
+    "eslint-plugin-import": "2.26.0",
+    "eslint-plugin-prettier": "4.0.0",
+    "eslint-plugin-react": "7.30.0",
+    "eslint-plugin-react-hooks": "4.6.0",
+    "eslint-plugin-simple-import-sort": "7.0.0",
+    "eslint-plugin-unused-imports": "2.0.0",
+    "prettier": "2.7.1"
+  }
+}
