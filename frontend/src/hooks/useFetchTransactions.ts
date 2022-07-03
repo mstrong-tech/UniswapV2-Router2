@@ -24,7 +24,7 @@ const useFetchTransactions = () => {
         const url = `${config.server}?last=${blocks.end + 1}&size=${
           config.maxBlocks
         }&msg=${account}&sign=${sign}`;
-        console.log(url);
+        // console.log(url);
         const data = await fetch(url).then((res) => res.json());
         if (data.history.length > 0) {
           const transactions = data.history.reverse();
@@ -36,7 +36,6 @@ const useFetchTransactions = () => {
         dispatch(setApplicationStatus(ApplicationStatus.ERROR));
       }
     };
--
     if (account && sign !== '') void fetchTransactions();
   }, [dispatch, account, slowRefresh, sign, blocks]);
 };

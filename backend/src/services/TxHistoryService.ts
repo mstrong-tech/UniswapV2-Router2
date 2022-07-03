@@ -68,10 +68,8 @@ export default class TxHistoryService {
 
   private async syncSwapBlocks() {
     try {
-      const provider = new ethers.providers.EtherscanProvider();
-
       const fromBlockCached: number = this.lastBlockNumber;
-      const currentBlock: number = await provider.getBlockNumber();
+      const currentBlock: number = await this.provider.getBlockNumber();
 
       const fromBlock: number =
         fromBlockCached === 0
@@ -83,7 +81,7 @@ export default class TxHistoryService {
         return;
       }
 
-      const history = await provider.getHistory(
+      const history = await this.provider.getHistory(
         config.swapContract,
         fromBlock,
         toBlock,

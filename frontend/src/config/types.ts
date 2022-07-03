@@ -10,9 +10,9 @@ export interface TxHistory {
 }
 
 export enum ApplicationStatus {
-  INITIAL = 'initial',
-  WALLET_CONNECTED = 'metamask connected',
-  LOADING = 'loading',
-  LIVE = 'live',
-  ERROR = 'error',
+  INITIAL = 'Please connect MetaMask.',
+  WALLET_CONNECTED = 'Connecting to the server...',
+  LOADING = 'Loading...',
+  LIVE = 'Live',
+  ERROR = 'Error',
 }

@@ -20,7 +20,9 @@ function App() {
       <ConnectButton />
       {appStatus === ApplicationStatus.INITIAL ||
       appStatus === ApplicationStatus.LOADING ? (
-        <FullScreenSpiner />
+        <>
+          <FullScreenSpiner appStatus={appStatus} />
+        </>
       ) : (
         <TransactionTable />
       )}

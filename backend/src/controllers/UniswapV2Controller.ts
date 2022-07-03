@@ -15,7 +15,7 @@ export default class UniswapV2Controller {
     void UniswapV2Controller.txHistoryService.initialize();
   }
 
-  private checkValidation(params: any): UserVerification {
+  private static verifyUser(params: any): UserVerification {
     const message = config.plainText;
     const signature = params.sign;
     let result: UserVerification = { isValid: false, msg: 'Invalid user' };
@@ -49,7 +49,7 @@ export default class UniswapV2Controller {
 
     const params = req.query;
     Log.d('> routing', params);
-    const result: UserVerification = this.checkValidation(params);
+    const result = UniswapV2Controller.verifyUser(params);
     if (!result.isValid) {
       return res.status(HttpStatusCodes.BAD_REQUEST).json({
         errors: [

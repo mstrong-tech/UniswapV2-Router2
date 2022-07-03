@@ -2,8 +2,9 @@ import { Box, Button, Text } from '@chakra-ui/react';
 import { useEthers } from '@usedapp/core';
 import React, { useEffect } from 'react';
 
+import { ApplicationStatus } from '../config/types';
 import { useAppDispatch } from '../states';
-import { setSignature } from '../states/application';
+import { setApplicationStatus, setSignature } from '../states/application';
 import { useSignature } from '../states/application/hooks';
 import Identicon from './Identicon';
 
@@ -28,6 +29,12 @@ export default function ConnectButton() {
     }
   }, [account, library, dispatch, storedSign]);
 
+  const handleDisconnec = () => {
+    deactivate();
+
+    dispatch(setApplicationStatus(ApplicationStatus.INITIAL));
+  };
+
   return (
     <Box
       width="100%"
@@ -39,7 +46,7 @@ export default function ConnectButton() {
     >
       {account ? (
         <Button
-          onClick={deactivate}
+          onClick={handleDisconnec}
           bg="gray.800"
           border="1px solid transparent"
           _hover={{
@@ -80,7 +87,7 @@ export default function ConnectButton() {
             borderColor: 'blue.700',
           }}
         >
-          Connect to Metamask
+          Connect to MetaMask
         </Button>
       )}
     </Box>
