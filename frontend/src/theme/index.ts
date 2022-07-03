@@ -5,11 +5,4 @@ export default extendTheme({
     heading: 'Inter',
     body: 'Inter',
   },
-  components: {
-    Td: {
-      baseStyle: {
-        textAlign: 'center',
-      },
-    },
-  },
 });

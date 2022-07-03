@@ -1,51 +1,107 @@
+import { TransactionResponse } from '@ethersproject/abstract-provider';
 import { ethers } from 'ethers';
 
 import { config } from '../config';
-import { TxHistory, UserVerification } from '../config/types';
+import { swapMethodIDs, TxHistory, ValueType } from '../config/types';
+import { Log } from '../utils';
 
 export default class TxHistoryService {
+  private provider: ethers.providers.EtherscanProvider =
+    new ethers.providers.EtherscanProvider();
+
   private lastBlockNumber = 0;
-  private txHistoryRepository: TxHistory[] = [];
+  private txHistory: TxHistory[] = [];
 
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
-  constructor() {}
+  async initialize() {
+    await this.syncSwapBlocks();
 
-  checkValidation(params: any): UserVerification {
-    const message = config.plainText;
-    const signature = params.sign;
-    // const fromBlock = parseInt(params.from as any | '0', 10);
-    // const toBlock = parseInt(params.to as any | '0', 10);
-    let result: UserVerification = { isValid: false, msg: 'Invalid user' };
+    setTimeout(() => {
+      void this.initialize();
+    }, config.syncDelay);
+  }
 
-    const address = ethers.utils.verifyMessage(message, signature);
-    if (address !== params.msg) {
-      console.log('not verified');
-      result = { isValid: false, msg: 'Not verified!' };
-      return result;
+  private async getReceipt(tx: TransactionResponse): Promise<TxHistory | null> {
+    const data = tx.data;
+
+    const found = swapMethodIDs.find(
+      (method) => data.indexOf(method.methodID) >= 0,
+    );
+    if (!found) return null;
+
+    const swapEventTopic = ethers.utils.id(
+      'Swap(address,uint256,uint256,uint256,uint256,address)',
+    );
+
+    const receipt = await this.provider.getTransactionReceipt(tx.hash);
+    if (receipt.status === 0 || receipt.logs.length === 0) return null;
+
+    const swapLogs = receipt.logs.filter(
+      (log) => log.topics[0] === swapEventTopic,
+    );
+    const lastSwapEvent = swapLogs.slice(-1)[0];
+
+    const swapInterface = new ethers.utils.Interface([
+      'event Swap (address indexed sender, uint256 amount0In, uint256 amount1In, uint256 amount0Out, uint256 amount1Out, address indexed to)',
+    ]);
+
+    const parsed = swapInterface.parseLog(lastSwapEvent);
+
+    const receivedTokens =
+      found.value === ValueType.Ether ? parsed.args.amount1In : 0;
+    const txValue = ethers.utils.formatEther(receivedTokens);
+
+    const txFee = ethers.utils.formatEther(
+      tx.gasPrice?.mul(tx.gasLimit) as any,
+    );
+
+    return {
+      txnHash: tx.hash,
+      method: found.function,
+      block: tx.blockNumber,
+      age: tx.timestamp,
+      from: tx.from,
+      to: tx.to,
+      value: txValue,
+      fee: txFee,
+    };
+  }
+
+  private async syncSwapBlocks() {
+    try {
+      const provider = new ethers.providers.EtherscanProvider();
+
+      const fromBlockCached: number = this.lastBlockNumber;
+      const currentBlock: number = await provider.getBlockNumber();
+
+      const fromBlock: number =
+        fromBlockCached === 0
+          ? Math.max(currentBlock - config.maxBlocks, config.deployedBlock)
+          : fromBlockCached + 1;
+      const toBlock = Math.min(fromBlock + config.blocksInterval, currentBlock);
+      if (fromBlock > toBlock) {
+        // Log.w('Already fetched all blocks');
+        return;
+      }
+
+      const history = await provider.getHistory(
+        config.swapContract,
+        fromBlock,
+        toBlock,
+      );
+
+      const promises: Promise<TxHistory | null>[] = [];
+      history.forEach((tx) => {
+        promises.push(this.getReceipt(tx));
+      });
+      const result = await Promise.all(promises);
+      result.forEach((item) => {
+        item !== null ? this.txHistory.push(item) : null;
+      });
+
+      this.lastBlockNumber = toBlock;
+    } catch (err) {
+      Log.e(err);
     }
-
-    // Check from/to block numbers
-
-    result = { isValid: true, msg: 'Verified user' };
-
-    return result;
-  }
-
-  blockNumber(): number {
-    return this.lastBlockNumber;
-  }
-
-  setBlockNumber(blockNumber: number) {
-    this.lastBlockNumber = blockNumber;
-  }
-
-  addHistory(historyDto: TxHistory): number {
-    return this.txHistoryRepository.push(historyDto);
-  }
-
-  addHistories(historisDto: TxHistory[]): number {
-    this.txHistoryRepository = this.txHistoryRepository.concat(historisDto);
-    return this.txHistoryRepository.length;
   }
 
   histories(startBlock: number, blocks: number): TxHistory[] {
@@ -59,10 +115,9 @@ export default class TxHistoryService {
       startBlock <= 1
         ? toBlock - Math.min(config.feedBlocks, blocks)
         : startBlock;
-    console.log('block info', fromBlock, toBlock);
-    return this.txHistoryRepository.filter((value) => {
-      const blockNumber = value.block === undefined ? 0 : value.block;
-      if (blockNumber >= fromBlock && blockNumber <= toBlock) return true;
-    });
+    // console.log('block info', fromBlock, toBlock);
+    return this.txHistory.filter(
+      (tx) => tx.block && tx.block >= fromBlock && tx.block <= toBlock,
+    );
   }
 }

@@ -1,6 +1,6 @@
 import { Application } from 'express';
+import { check } from 'express-validator';
 
-// import { check } from 'express-validator';
 import { UniswapV2Controller } from '../controllers';
 
 export default class Routes {
@@ -10,10 +10,16 @@ export default class Routes {
     app.get(
       '/uniswap-history',
       [
-        // check('msg')
-        // check('sign')
-        // check('from')
-        // check('to')
+        check('msg').exists().isString(),
+        check('sign').exists().isString(),
+        check('last')
+          .exists()
+          .isNumeric()
+          .custom((v) => Number(v) > 0),
+        check('size')
+          .exists()
+          .isNumeric()
+          .custom((v) => Number(v) > 0),
       ],
       this.controller.routing,
     );

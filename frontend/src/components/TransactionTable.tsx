@@ -9,23 +9,59 @@ import {
   Thead,
   Tr,
 } from '@chakra-ui/react';
-// import { ethers } from 'ethers';
 import React, { ChangeEvent, useEffect, useMemo, useState } from 'react';
 
 import { config } from '../config';
 import { TxHistory } from '../config/types';
+import { useUniswapTransactions } from '../states/application/hooks';
 
 const primaryLinkColor = 'blue.300';
 const primaryHeadColor = 'green';
 const primaryBodyColor = 'white';
 
-export default function TransactionTable({
-  columns,
-  rowData,
-}: {
-  columns: any;
-  rowData: TxHistory[];
-}) {
+const columns = [
+  {
+    Header: 'Uniswap V2 swap transactions',
+    columns: [
+      {
+        Header: 'Txn Hash',
+        accessor: 'Txn Hash',
+      },
+      {
+        Header: 'Method',
+        accessor: 'Method',
+      },
+      {
+        Header: 'Block',
+        accessor: 'Block',
+      },
+      {
+        Header: 'Age',
+        accessor: 'Age',
+      },
+      {
+        Header: 'From',
+        accessor: 'From',
+      },
+      {
+        Header: 'To',
+        accessor: 'To',
+      },
+      {
+        Header: 'Value',
+        accessor: 'Value',
+      },
+      {
+        Header: 'Txn Fee',
+        accessor: 'Txn Fee',
+      },
+    ],
+  },
+];
+
+export default function TransactionTable() {
+  const rowData: TxHistory[] = useUniswapTransactions();
+
   const [pageSize, setPageSize] = useState<number>(50);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [pageTotal, setPageTotal] = useState<number>(
@@ -39,8 +75,7 @@ export default function TransactionTable({
 
     let txs: TxHistory[] = [];
     if (pages > 0) {
-      const clonedArr = [...rowData];
-      txs = clonedArr.splice(pageSize * (currentPage - 1), pageSize);
+      txs = rowData.slice(pageSize * (currentPage - 1), pageSize);
     }
     setTransactions(txs);
   }, [currentPage, pageSize, rowData]);
@@ -59,7 +94,7 @@ export default function TransactionTable({
   };
 
   const createPageOptions = useMemo(() => {
-    const pageOptions: any[] = [];
+    const pageOptions = [];
     for (let i = 1; i <= pageTotal; i++) {
       pageOptions.push(
         <option key={`page-${i}`} value={`${i}`}>
@@ -100,48 +135,48 @@ export default function TransactionTable({
       <Table>
         <Thead>
           <Tr>
-            {columns[0].columns.map((value: any) => (
+            {columns[0].columns.map((column: any) => (
               <Th
-                key={value.accessor}
+                key={column.accessor}
                 textColor={primaryHeadColor}
                 textAlign="center"
                 textTransform="none"
               >
-                {value.Header}
+                {column.Header}
               </Th>
             ))}
           </Tr>
         </Thead>
         <Tbody textColor={primaryBodyColor}>
-          {transactions.map((value: TxHistory) => (
-            <Tr key={value.txnHash + Math.random()}>
+          {transactions.map((transaction: TxHistory) => (
+            <Tr key={transaction.txnHash + Math.random()}>
               <Td>
                 <Link
                   color={primaryLinkColor}
-                  href={`https://etherscan.io/tx/${value.txnHash}`}
+                  href={`https://etherscan.io/tx/${transaction.txnHash}`}
                   isExternal
                 >
-                  {value.txnHash.slice(0, 15) + '...'}
+                  {transaction.txnHash.slice(0, 15) + '...'}
                 </Link>
               </Td>
-              <Td>{value.method.slice(0, 15) + '...'}</Td>
+              <Td>{transaction.method.slice(0, 15) + '...'}</Td>
               <Td>
                 <Link
                   color={primaryLinkColor}
-                  href={`https://etherscan.io/block/${value.block}`}
+                  href={`https://etherscan.io/block/${transaction.block}`}
                   isExternal
                 >
-                  {value.block}
+                  {transaction.block}
                 </Link>
               </Td>
-              <Td>{new Date(value.age * 1000).toLocaleString()}</Td>
+              <Td>{new Date(transaction.age * 1000).toLocaleString()}</Td>
               <Td>
                 <Link
                   color={primaryLinkColor}
-                  href={`https://etherscan.io/address/${value.from}`}
+                  href={`https://etherscan.io/address/${transaction.from}`}
                   isExternal
                 >
-                  {value.from.slice(0, 15) + '...'}
+                  {transaction.from.slice(0, 15) + '...'}
                 </Link>
               </Td>
               <Td>
@@ -153,8 +188,8 @@ export default function TransactionTable({
                   Uniswap V2: Router 2
                 </Link>
               </Td>
-              <Td textAlign="center">{value.value + ' Ether'}</Td>
-              <Td>{Number(value.fee).toFixed(8)}</Td>
+              <Td textAlign="center">{transaction.value + ' Ether'}</Td>
+              <Td>{Number(transaction.fee).toFixed(8)}</Td>
             </Tr>
           ))}
         </Tbody>

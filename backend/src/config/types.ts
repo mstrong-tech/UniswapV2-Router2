@@ -1,31 +1,53 @@
-export const swapMethodIDs = [
-  { methodID: '0xfb3bdb41', function: 'swapETHForExactTokens', value: 'Ether' },
-  { methodID: '0x7ff36ab5', function: 'swapExactETHForTokens', value: 'Ether' },
+export enum ValueType {
+  Ether = 'Ether',
+  ERC20 = 'ERC20',
+}
+export interface SwapMethodType {
+  methodID: string;
+  function: string;
+  value: ValueType;
+}
+
+export const swapMethodIDs: SwapMethodType[] = [
+  {
+    methodID: '0xfb3bdb41',
+    function: 'swapETHForExactTokens',
+    value: ValueType.Ether,
+  },
+  {
+    methodID: '0x7ff36ab5',
+    function: 'swapExactETHForTokens',
+    value: ValueType.Ether,
+  },
   {
     methodID: '0x38ed1739',
     function: 'swapExactTokensForTokens',
-    value: 'Other',
+    value: ValueType.ERC20,
   },
-  { methodID: '0x18cbafe5', function: 'swapExactTokensForETH', value: 'Other' },
+  {
+    methodID: '0x18cbafe5',
+    function: 'swapExactTokensForETH',
+    value: ValueType.ERC20,
+  },
   {
     methodID: '0x8803dbee',
     function: 'swapTokensForExactTokens',
-    value: 'Other',
+    value: ValueType.ERC20,
   },
   {
     methodID: '0x5c11d795',
     function: 'swapExactTokensForTokensSupportingFeeOnTransferTokens',
-    value: 'Other',
+    value: ValueType.ERC20,
   },
   {
     methodID: '0xb6f9de95',
     function: 'swapExactETHForTokensSupportingFeeOnTransferTokens',
-    value: 'Other',
+    value: ValueType.ERC20,
   },
   {
     methodID: '0x791ac947',
     function: 'swapExactTokensForETHSupportingFeeOnTransferTokens',
-    value: 'Other',
+    value: ValueType.ERC20,
   },
 ];
 

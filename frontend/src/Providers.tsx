@@ -5,7 +5,6 @@ import { Provider } from 'react-redux';
 
 import { RefreshContextProvider } from './contexts/RefreshContext';
 import store from './states/index';
-// import theme from './theme';
 
 const Providers: React.FC<PropsWithChildren<unknown>> = ({ children }) => {
   return (

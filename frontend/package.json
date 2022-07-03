@@ -18,7 +18,7 @@
     "@types/jest": "27.5.2",
     "@types/node": "16.11.41",
     "@usedapp/core": "1.0.15",
-    "ethers": "^5.6.9",
+    "ethers": "5.6.9",
     "framer-motion": "6.3.11",
     "react": "18.2.0",
     "react-dom": "18.2.0",
