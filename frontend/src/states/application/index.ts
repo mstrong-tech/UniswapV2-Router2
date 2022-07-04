@@ -1,11 +1,11 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-import { ApplicationStatus, TxHistory } from '../../config/types';
+import { ApplicationStatus, TransactionData } from '../../config/types';
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface ApplicationState {
   status: ApplicationStatus;
-  transactions: TxHistory[];
+  transactions: TransactionData[];
   signature: string;
   blocks: { from: number; end: number };
 }
@@ -27,7 +27,10 @@ export const ApplicationSlice = createSlice({
     ) => {
       state.status = action.payload;
     },
-    updateTransactions: (state: any, action: PayloadAction<TxHistory[]>) => {
+    updateTransactions: (
+      state: any,
+      action: PayloadAction<TransactionData[]>,
+    ) => {
       const temp = action.payload.concat(state.transactions);
       state.blocks.from = temp[temp.length - 1].block;
       state.blocks.end = temp[0].block;

@@ -15,7 +15,7 @@ export default class UniswapV2Controller {
     void UniswapV2Controller.txHistoryService.initialize();
   }
 
-  private static verifyUser(params: any): UserVerification {
+  static verifyUser(params: any): UserVerification {
     const message = config.plainText;
     const signature = params.sign;
     let result: UserVerification = { isValid: false, msg: 'Invalid user' };
@@ -64,9 +64,10 @@ export default class UniswapV2Controller {
       const fromBlock = Number(params.last);
       const blocks = Number(params.size);
 
-      const txHistories = UniswapV2Controller.txHistoryService.histories(
+      const txHistories = UniswapV2Controller.txHistoryService.getTransactions(
         fromBlock,
         blocks,
+        UniswapV2Controller.txHistoryService.getLastBlockNumber(),
       );
       const jsonData = { history: txHistories };
       return res.json(jsonData);

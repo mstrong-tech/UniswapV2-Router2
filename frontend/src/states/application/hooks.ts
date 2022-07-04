@@ -1,13 +1,13 @@
 import { useSelector } from 'react-redux';
 
-import { ApplicationStatus, TxHistory } from '../../config/types';
+import { ApplicationStatus, TransactionData } from '../../config/types';
 import { AppState } from '..';
 
 export const useApplicationStatus = (): ApplicationStatus => {
   return useSelector((state: AppState) => state.application.status);
 };
 
-export const useUniswapTransactions = (): TxHistory[] => {
+export const useUniswapTransactions = (): TransactionData[] => {
   return useSelector((state: AppState) => state.application.transactions);
 };
 

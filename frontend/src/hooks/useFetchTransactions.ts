@@ -26,6 +26,7 @@ const useFetchTransactions = () => {
         }&msg=${account}&sign=${sign}`;
         // console.log(url);
         const data = await fetch(url).then((res) => res.json());
+        // console.log('received array size', data.history.length);
         if (data.history.length > 0) {
           const transactions = data.history.reverse();
           dispatch(updateTransactions(transactions));

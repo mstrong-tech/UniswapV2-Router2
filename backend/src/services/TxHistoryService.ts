@@ -2,15 +2,23 @@ import { TransactionResponse } from '@ethersproject/abstract-provider';
 import { ethers } from 'ethers';
 
 import { config } from '../config';
-import { swapMethodIDs, TxHistory, ValueType } from '../config/types';
+import { swapMethodIDs, TransactionData, ValueType } from '../config/types';
 import { Log } from '../utils';
 
 export default class TxHistoryService {
+  static mockClear() {
+    throw new Error('Method not implemented.');
+  }
+  static mockImplementation(
+    arg0: () => { getTransactions: jest.Mock<any, any> },
+  ) {
+    throw new Error('Method not implemented.');
+  }
   private provider: ethers.providers.EtherscanProvider =
     new ethers.providers.EtherscanProvider();
 
   private lastBlockNumber = 0;
-  private txHistory: TxHistory[] = [];
+  private txHistory: TransactionData[] = [];
 
   async initialize() {
     await this.syncSwapBlocks();
@@ -20,7 +28,12 @@ export default class TxHistoryService {
     }, config.syncDelay);
   }
 
-  private async getReceipt(tx: TransactionResponse): Promise<TxHistory | null> {
+  getLastBlockNumber(): number {
+    return this.lastBlockNumber;
+  }
+
+  async getReceipt(tx: TransactionResponse): Promise<TransactionData | null> {
+    // Log.d('tx hash', tx.hash);
     const data = tx.data;
 
     const found = swapMethodIDs.find(
@@ -34,7 +47,7 @@ export default class TxHistoryService {
 
     const receipt = await this.provider.getTransactionReceipt(tx.hash);
     if (receipt.status === 0 || receipt.logs.length === 0) return null;
-
+    // Log.d('receipt', receipt.blockNumber);
     const swapLogs = receipt.logs.filter(
       (log) => log.topics[0] === swapEventTopic,
     );
@@ -53,7 +66,7 @@ export default class TxHistoryService {
     const txFee = ethers.utils.formatEther(
       tx.gasPrice?.mul(tx.gasLimit) as any,
     );
-
+    // Log.d('tx value', txValue);
     return {
       txnHash: tx.hash,
       method: found.function,
@@ -64,6 +77,34 @@ export default class TxHistoryService {
       value: txValue,
       fee: txFee,
     };
+  }
+
+  async getContractHistory(
+    contract: string,
+    fromBlock: number,
+    toBlock: number,
+  ) {
+    const history = await this.provider.getHistory(
+      contract,
+      fromBlock,
+      toBlock,
+    );
+
+    return history;
+  }
+
+  async addTransactions(history: any): Promise<number> {
+    const promises: Promise<TransactionData | null>[] = [];
+    history.forEach((tx: any) => {
+      promises.push(this.getReceipt(tx));
+    });
+    const result = await Promise.all(promises);
+    // console.log('result', result.length);
+    result.forEach((item) => {
+      item !== null ? this.txHistory.push(item) : null;
+    });
+
+    return this.txHistory.length;
   }
 
   private async syncSwapBlocks() {
@@ -81,20 +122,13 @@ export default class TxHistoryService {
         return;
       }
 
-      const history = await this.provider.getHistory(
+      const history = await this.getContractHistory(
         config.swapContract,
         fromBlock,
         toBlock,
       );
-
-      const promises: Promise<TxHistory | null>[] = [];
-      history.forEach((tx) => {
-        promises.push(this.getReceipt(tx));
-      });
-      const result = await Promise.all(promises);
-      result.forEach((item) => {
-        item !== null ? this.txHistory.push(item) : null;
-      });
+      // Log.d(fromBlock, toBlock, history.length);
+      await this.addTransactions(history);
 
       this.lastBlockNumber = toBlock;
     } catch (err) {
@@ -102,13 +136,17 @@ export default class TxHistoryService {
     }
   }
 
-  histories(startBlock: number, blocks: number): TxHistory[] {
-    if (this.lastBlockNumber === 0) return [];
+  getTransactions(
+    startBlock: number,
+    blocks: number,
+    cachedBlock: number,
+  ): TransactionData[] {
+    if (cachedBlock === 0) return [];
 
     const toBlock =
       startBlock <= 1
-        ? this.lastBlockNumber
-        : Math.min(this.lastBlockNumber, startBlock + blocks - 1);
+        ? cachedBlock
+        : Math.min(cachedBlock, startBlock + blocks - 1);
     const fromBlock =
       startBlock <= 1
         ? toBlock - Math.min(config.feedBlocks, blocks)

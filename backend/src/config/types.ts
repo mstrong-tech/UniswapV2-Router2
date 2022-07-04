@@ -51,7 +51,7 @@ export const swapMethodIDs: SwapMethodType[] = [
   },
 ];
 
-export interface TxHistory {
+export interface TransactionData {
   txnHash: string;
   method: string;
   block: number | undefined;

@@ -8,9 +8,9 @@ export const config = {
   swapContract:
     process.env.SWAP_CONTRACT || '0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D',
   syncDelay: Number(process.env.SYNC_DELAY || '20000'),
-  blocksInterval: Number(process.env.BLOCKS_ONETIME || '100'),
+  blocksInterval: Number(process.env.BLOCKS_ONETIME || '5'),
   maxBlocks: Number(process.env.MAX_BLOCKS || '1000'),
-  feedBlocks: Number(process.env.FEED_BLOCKS || '100'),
+  feedBlocks: Number(process.env.FEED_BLOCKS || '25'),
   deployedBlock: Number(process.env.DEPLOYED_BLOCK || '10207858'),
   plainText: 'UniswapV2 Router2',
 };

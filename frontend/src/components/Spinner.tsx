@@ -6,7 +6,7 @@ import { ApplicationStatus } from '../config/types';
 const FullScreenSpiner: React.FC<{
   size?: string;
   color?: string;
-  appStatus?: ApplicationStatus;
+  appStatus: ApplicationStatus;
 }> = ({ size = 'lg', color = 'green.400', appStatus, ...rest }) => {
   return (
     <Box position={'relative'} width={'full'} height={'100vh'}>

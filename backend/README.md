@@ -22,7 +22,7 @@ Paramter:
 
 ### Response
 
-```json
+```javascript
 {
   "history": [
     {

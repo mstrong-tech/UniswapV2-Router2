@@ -1,4 +1,4 @@
-export interface TxHistory {
+export interface TransactionData {
   txnHash: string;
   method: string;
   block: number;
@@ -12,7 +12,7 @@ export interface TxHistory {
 export enum ApplicationStatus {
   INITIAL = 'Please connect MetaMask.',
   WALLET_CONNECTED = 'Connecting to the server...',
-  LOADING = 'Loading...',
+  LOADING = 'Fetching transactions from the server...',
   LIVE = 'Live',
-  ERROR = 'Error',
+  ERROR = 'Connetion error',
 }

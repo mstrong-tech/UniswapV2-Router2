@@ -12,7 +12,7 @@ import {
 import React, { ChangeEvent, useEffect, useMemo, useState } from 'react';
 
 import { config } from '../config';
-import { TxHistory } from '../config/types';
+import { TransactionData } from '../config/types';
 import { useUniswapTransactions } from '../states/application/hooks';
 
 const primaryLinkColor = 'blue.300';
@@ -60,20 +60,20 @@ const columns = [
 ];
 
 export default function TransactionTable() {
-  const rowData: TxHistory[] = useUniswapTransactions();
+  const rowData: TransactionData[] = useUniswapTransactions();
 
   const [pageSize, setPageSize] = useState<number>(50);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [pageTotal, setPageTotal] = useState<number>(
     Math.ceil(rowData.length / pageSize),
   );
-  const [transactions, setTransactions] = useState<TxHistory[]>([]);
+  const [transactions, setTransactions] = useState<TransactionData[]>([]);
 
   useEffect(() => {
     const pages = Math.ceil(rowData.length / pageSize);
     setPageTotal(pages);
 
-    let txs: TxHistory[] = [];
+    let txs: TransactionData[] = [];
     if (pages > 0) {
       txs = rowData.slice(pageSize * (currentPage - 1), pageSize);
     }
@@ -148,7 +148,7 @@ export default function TransactionTable() {
           </Tr>
         </Thead>
         <Tbody textColor={primaryBodyColor}>
-          {transactions.map((transaction: TxHistory) => (
+          {transactions.map((transaction: TransactionData) => (
             <Tr key={transaction.txnHash + Math.random()}>
               <Td>
                 <Link
