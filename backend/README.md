@@ -15,10 +15,10 @@ URL: `/uniswap-history`
 
 Paramter:
 
-  - `last` - Last block number received
-  - `size` - Number of blocks to fetch from the server
-  - `msg` - User wallet address
-  - `sign` - Signature of message
+- `last` - Last block number received
+- `size` - Number of blocks to fetch from the server
+- `msg` - User wallet address
+- `sign` - Signature of message
 
 ### Response
 
@@ -35,7 +35,7 @@ Paramter:
       "value": "0.0",
       "fee": "0.00200752192599465"
     },
-    `...
+    ...
   ]
 }
 ```
